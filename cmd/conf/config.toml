@@ -1,0 +1,24 @@
+[METALPAPER]
+weekdays = ["Monday"]
+weeks = [1, 3]
+message = "金属・紙類のゴミの日です"
+
+[BURNABLE]
+weekdays = ["Tuesday", "Friday"]
+weeks = [1, 2, 3, 4, 5]
+message = "燃えるゴミの日です"
+
+[CANBOTTLE]
+weekdays = ["Friday"]
+weeks = [2, 4]
+message = "ビン・カンのゴミの日です"
+
+[PETFIBER]
+weekdays = ["Friday"]
+weeks = [1, 3]
+message = "ペットボトル・繊維類のゴミの日です"
+
+[PLASTIC]
+weekdays = ["Wednesday"]
+weeks = [1, 2, 3, 4, 5]
+message = "プラスチックのゴミの日です"
