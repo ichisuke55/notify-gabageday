@@ -1,13 +1,15 @@
 package main
 
 import (
-	"./conf"
+	"flag"
+	"fmt"
 	"github.com/ashwanthkumar/slack-go-webhook"
+	"github.com/ichisuke55/notify-gabageday/conf"
 	"log"
 	"math"
 	"reflect"
+	"strconv"
 	"time"
-	//"fmt"
 )
 
 func containStr(s []string, str string) bool {
@@ -46,15 +48,45 @@ func PostSlack(msg string, url string) {
 }
 
 func main() {
+	// command line arguments
+	var (
+		argDay  = flag.String("d", "today", "no args execute today information. you can select today(daefault) or tomorrow")
+		testDay = flag.Int("n", 0, "to check specific day at this month")
+	)
+	// *argDay is contain today or tommorow
+	// parse args
+	flag.Parse()
+
 	t := time.Now()
 	wd := t.Weekday().String()
-	dc := int(math.Ceil(float64(t.Day() / 7)))
+	dc := int(math.Floor(float64((t.Day()-1)/7))) + 1
+
+	switch {
+	case *argDay == "today":
+		fmt.Println("today!")
+	case *argDay == "tommorow":
+		t = time.Now().Add(time.Duration(24) * time.Hour)
+		wd = t.Weekday().String()
+		dc = int(math.Floor(float64((t.Day()-1)/7))) + 1
+		fmt.Println("tomorrow!")
+	default:
+		panic(*argDay + ": args is exception!!")
+	}
+
+	// if args -n is not default:0
+	switch {
+	case *testDay != 0:
+		dd := int(math.Floor(float64((*testDay-1)/7))) + 1
+		fmt.Println("after(specific day): " + strconv.Itoa(dd))
+	default:
+		break // do nothing
+	}
 
 	//Read WEBHOOKURL
 	confJson, err := conf.ReadJson()
-        if err != nil {
-                log.Printf("error: %v\n", err)
-        }
+	if err != nil {
+		log.Printf("error: %v\n", err)
+	}
 	webhookUrl := confJson.WEBHOOKURL
 
 	//Read Config from config.toml
@@ -65,13 +97,14 @@ func main() {
 
 	cv := reflect.ValueOf(*config)
 	ct := cv.Type()
+
+	message := "<!channel> "
 	for i := 0; i < ct.NumField(); i++ {
 		weeksIntSlice := cv.Field(i).Field(1).Interface().([]int)
 		weekdayStrSlice := cv.Field(i).Field(0).Interface().([]string)
 		if containStr(weekdayStrSlice, wd) && containInt(weeksIntSlice, dc) {
-			message := cv.Field(i).Field(2).Interface().(string)
+			message += cv.Field(i).Field(2).Interface().(string)
 			PostSlack(message, webhookUrl)
 		}
 	}
-
 }
