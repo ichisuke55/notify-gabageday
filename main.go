@@ -61,10 +61,15 @@ func main() {
 	wd := t.Weekday().String()
 	dc := int(math.Floor(float64((t.Day()-1)/7))) + 1
 
+
+	message := "<!channel> "
+
 	switch {
 	case *argDay == "today":
+		message += "今日は"
 		fmt.Println("today!")
 	case *argDay == "tommorow":
+		message += "明日は"
 		t = time.Now().Add(time.Duration(24) * time.Hour)
 		wd = t.Weekday().String()
 		dc = int(math.Floor(float64((t.Day()-1)/7))) + 1
@@ -98,7 +103,6 @@ func main() {
 	cv := reflect.ValueOf(*config)
 	ct := cv.Type()
 
-	message := "<!channel> "
 	for i := 0; i < ct.NumField(); i++ {
 		weeksIntSlice := cv.Field(i).Field(1).Interface().([]int)
 		weekdayStrSlice := cv.Field(i).Field(0).Interface().([]string)
