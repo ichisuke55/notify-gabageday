@@ -50,17 +50,21 @@ func PostSlack(msg string, url string) {
 func main() {
 	// command line arguments
 	var (
-		argDay  = flag.String("d", "today", "no args execute today information. you can select today(daefault) or tomorrow")
+		argDay  = flag.String("d", "today", "no args execute today information. you can select today(default) or tomorrow")
 		testDay = flag.Int("n", 0, "to check specific day at this month")
 	)
-	// *argDay is contain today or tommorow
+	// *argDay is contain today or tomorrow
 	// parse args
 	flag.Parse()
 
 	t := time.Now()
 	wd := t.Weekday().String()
-	dc := int(math.Floor(float64((t.Day()-1)/7))) + 1
-
+	dc := 0
+	if t.Day() == 1 {
+		dc = 1
+	} else {
+		dc = int(math.Floor(float64((t.Day()-1)/7))) + 1
+	}
 
 	message := "<!channel> "
 
@@ -68,7 +72,7 @@ func main() {
 	case *argDay == "today":
 		message += "今日は"
 		fmt.Println("today!")
-	case *argDay == "tommorow":
+	case *argDay == "tomorrow":
 		message += "明日は"
 		t = time.Now().Add(time.Duration(24) * time.Hour)
 		wd = t.Weekday().String()
@@ -108,7 +112,9 @@ func main() {
 		weekdayStrSlice := cv.Field(i).Field(0).Interface().([]string)
 		if containStr(weekdayStrSlice, wd) && containInt(weeksIntSlice, dc) {
 			message += cv.Field(i).Field(2).Interface().(string)
-			PostSlack(message, webhookUrl)
+			message += " "
+			// PostSlack(message, webhookUrl)
 		}
 	}
+	PostSlack(message, webhookUrl)
 }
