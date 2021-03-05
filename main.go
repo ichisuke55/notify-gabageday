@@ -113,8 +113,7 @@ func main() {
 		if containStr(weekdayStrSlice, wd) && containInt(weeksIntSlice, dc) {
 			message += cv.Field(i).Field(2).Interface().(string)
 			message += " "
-			// PostSlack(message, webhookUrl)
+			PostSlack(message, webhookUrl)
 		}
 	}
-	PostSlack(message, webhookUrl)
 }
